@@ -1,0 +1,12 @@
+{
+  "Unauthorized": "درخواست غیرمجاز",
+  "Service is not responding": "سرویس مورد نظر پاسخگو نمی باشد",
+  "Not Found": "دیتای مورد نظر یافت نشد",
+  "The entity does not exist": "{entity} مورد نظر وجود ندارد",
+  "The entity can not deleted due to a reference": "{entity} مورد نظر به دلیل استفاده در یک {reference} قابل حذف نیست",
+  "Your permission to do this action has denied": "دسترسی شما برای انجام این عملیات رد شده است",
+  "There is already a record with requested info": "قبلا رکوردی با مشخصات مورد نظر ثبت شده است",
+  "This request is not possible": "انجام این عملیات امکان پذیر نیست",
+  "The requested info not found": "اطلاعات مورد نظر یافت نشد",
+  "items": {}
+}
