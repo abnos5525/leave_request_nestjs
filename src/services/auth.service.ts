@@ -108,12 +108,7 @@ export class AuthService {
   }
 
   private responseLogger(res: AxiosResponse) {
-    const dataForLog =
-      ((typeof res.data === 'object' && JSON.stringify(res.data)?.length) ||
-        (typeof res.data !== 'object' && res.data?.length)) > 10000
-        ? 'response is too large'
-        : res.data;
-    this.loggerService.logResponse(res.config._ctx, dataForLog, {
+    this.loggerService.logResponse(res.config._ctx, res.data, {
       statusCode: res.status,
     });
     return res;

@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { CoreService } from '../common/services/core.service';
 import { LoggerService } from '../common/services/logger.service';
 import { LogTypes } from '../common/types/logger';
+import { UserDto } from 'src/dto/user.dto';
 
 @Injectable()
 export class HafezService extends CoreService {
@@ -15,23 +16,10 @@ export class HafezService extends CoreService {
     super(httpService, loggerService, LogTypes.HAFEZ_REQUESTS);
   }
 
-  async getProfile(clientToken: string) {
-    const { data } = await this.httpService.axiosRef.get(
-      `/v1/users/profile/me`,
-      {
-        auth: null,
-        headers: {
-          Authorization: clientToken,
-        },
-      },
+  async getUsers(): Promise<UserDto[]> {
+    const response = await this.httpService.axiosRef.get(
+      `/v1/positions/all-with-user-and-group`,
     );
-
-    return {
-      username: data.username || null,
-      first_name: data.person?.first_name || null,
-      last_name: data.person?.last_name || null,
-      national_code: data.person?.national_code || null,
-      avatar: data.person?.avatar_full_address || null,
-    };
+    return response.data.data;
   }
 }

@@ -40,6 +40,7 @@ async function bootstrap() {
   console.info(`| Server URL: http://localhost:${port}/api          |`);
   console.info(`| Swagger URL: http://localhost:${port}/api/doc     |`);
   console.info('----------------------------------------------------');
+  console.info(configService.get('gateway.url'));
 }
 
 bootstrap();

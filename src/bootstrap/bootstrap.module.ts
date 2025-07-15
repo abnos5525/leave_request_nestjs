@@ -6,10 +6,7 @@ import { PostgresModule } from './postgres/postgres.module';
 import { WinstonLoggerModule } from './winston/winston-logger.module';
 import { KeycloakModule } from './keycloak/keycloak.module';
 import { I18nModule } from './i18n/i18n.module';
-import { PrometheusModule } from './prometheus/prometheus.module';
-import { BasicStrategy } from '../common/strategies/basic.strategy';
 import { LoggerService } from '../common/services/logger.service';
-import { BasicAuthGuard } from '../common/guards/basic.guard';
 
 @Module({
   imports: [
@@ -20,9 +17,8 @@ import { BasicAuthGuard } from '../common/guards/basic.guard';
     I18nModule,
     KeycloakModule,
     WinstonLoggerModule,
-    PrometheusModule,
   ],
-  providers: [LoggerService, BasicStrategy, BasicAuthGuard],
+  providers: [LoggerService],
   exports: [KeycloakModule, LoggerService],
 })
 export class BootstrapModule {}

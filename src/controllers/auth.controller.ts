@@ -1,16 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Headers,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { ConfigService } from '@nestjs/config';
 import { AuthenticatedUser, AuthGuard } from 'nest-keycloak-connect';
 import { AuthService } from '../services/auth.service';
-import { HafezService } from '../services/hafez.service';
 import { LoginDto } from '../dto/login.dto';
 import { LoginResponseDto } from '../dto/login-response.dto';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
@@ -19,11 +10,7 @@ import { AuthUserDto } from '../dto/auth-user.dto';
 @ApiTags('auth')
 @Controller('/v1/auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private hafezService: HafezService,
-    private configService: ConfigService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Post('login')
   @ApiOkResponse({ type: LoginResponseDto })
@@ -47,19 +34,14 @@ export class AuthController {
   @ApiBearerAuth('bearer-auth')
   @UseGuards(AuthGuard)
   @ApiOkResponse({ type: AuthUserDto })
-  async getUser(
-    @AuthenticatedUser() user,
-    @Headers('authorization') authorization,
-  ) {
-    const profile = await this.hafezService.getProfile(authorization);
+  async getUser(@AuthenticatedUser() user) {
     return {
-      username: profile.username || user.preferred_username,
-      first_name: profile.first_name || user.given_name,
-      last_name: profile.last_name || user.family_name,
-      avatar: profile.avatar,
+      name: user.name,
+      given_name: user.given_name,
+      family_name: user.family_name,
+      preferred_username: user.preferred_username,
       email: user.email,
       scope: user.scope,
-      roles: user.resource_access[this.configService.get('app.name')]?.roles,
     };
   }
 }

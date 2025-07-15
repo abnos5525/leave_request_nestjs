@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthUserDto {
-  @ApiProperty()
-  username: string;
-  @ApiProperty()
-  first_name: string;
-  @ApiProperty()
-  last_name: string;
-  @ApiProperty()
-  avatar: string;
-  @ApiProperty()
+  @ApiProperty({ required: false, readOnly: true })
+  name: string;
+  @ApiProperty({ required: false, readOnly: true })
+  given_name: string;
+  @ApiProperty({ required: false, readOnly: true })
+  family_name: string;
+  @ApiProperty({ required: false, readOnly: true })
+  preferred_username: string;
+  @ApiProperty({ required: false, readOnly: true })
   email: string;
-  @ApiProperty()
+  @ApiProperty({ required: false, readOnly: true })
   scope: string;
 }
