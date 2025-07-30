@@ -8,7 +8,7 @@ import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { AuthUserDto } from '../dto/auth-user.dto';
 
 @ApiTags('auth')
-@Controller('/v1/auth')
+@Controller('khabir-service/api/v1/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 

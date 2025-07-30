@@ -18,6 +18,7 @@ import * as Client from 'cloud-config-client';
             context: process.env,
           })
             .then((config) => {
+              console.log(config);
               return config.properties;
             })
             .catch((error) => {

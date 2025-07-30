@@ -13,7 +13,7 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
     super(repo);
   }
 
-  getUsers() {
+  async getUsers() {
     return this.hafezService.getUsers();
   }
 }

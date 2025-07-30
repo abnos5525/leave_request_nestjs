@@ -13,7 +13,7 @@ export function setupSwagger(
     .setTitle('Leave Request')
     .addServer(
       configService.get('config.server.profiles') === 'prod'
-        ? `${configService.get('gateway.url')}${configService.get('app.name')}`
+        ? `${configService.get('gateway.url')}`
         : '',
     )
     .setVersion(version)

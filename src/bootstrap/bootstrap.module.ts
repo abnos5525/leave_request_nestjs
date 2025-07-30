@@ -11,7 +11,7 @@ import { LoggerService } from '../common/services/logger.service';
 @Module({
   imports: [
     ConfigServerModule,
-    EurekaModule,
+    // EurekaModule,
     PostgresModule,
     PassportModule,
     I18nModule,

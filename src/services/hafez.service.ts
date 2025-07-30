@@ -5,6 +5,7 @@ import { CoreService } from '../common/services/core.service';
 import { LoggerService } from '../common/services/logger.service';
 import { LogTypes } from '../common/types/logger';
 import { UserDto } from 'src/dto/user.dto';
+import { HafezUserResponseDto } from 'src/dto/hafez-user-response.dto';
 
 @Injectable()
 export class HafezService extends CoreService {
@@ -17,9 +18,24 @@ export class HafezService extends CoreService {
   }
 
   async getUsers(): Promise<UserDto[]> {
-    const response = await this.httpService.axiosRef.get(
-      `/v1/positions/all-with-user-and-group`,
-    );
-    return response.data.data;
+    // const { data } = await this.httpService.axiosRef.get(
+    //   `/v1/positions/all-with-user-and-group`,
+    // );
+    return;
+    // this.mapHafezUserToPositionUser(data);
+  }
+
+  mapHafezUserToPositionUser(data: HafezUserResponseDto[]): UserDto[] {
+    return data.map((item): UserDto => {
+      return {
+        first_name: item.first_name || null,
+        last_name: item.last_name || null,
+        national_code: item.national_code || null,
+        position_id: item.position_id || null,
+        position_name: item.position_name || null,
+        user_id: item.user_id || null,
+        username: item.username || null,
+      };
+    });
   }
 }

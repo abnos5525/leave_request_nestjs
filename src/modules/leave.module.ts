@@ -1,43 +1,14 @@
 import { Module } from '@nestjs/common';
-import { CamundaModule } from './camunda.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { LeaveEntity } from 'src/entities/leave.entity';
+import { LeaveService } from 'src/services/leave.service';
 import { LeaveController } from 'src/controllers/leave.controller';
-import { CamundaService } from 'src/services/camunda.service';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { HttpModule } from '@nestjs/axios'; // Import HttpModule
+import { BpmsModule } from './bpms.module';
 
 @Module({
-  imports: [
-    CamundaModule,
-    HttpModule, // Make HttpService available in this module
-  ],
+  imports: [TypeOrmModule.forFeature([LeaveEntity]), BpmsModule],
+  providers: [LeaveService],
   controllers: [LeaveController],
-  providers: [
-    {
-      provide: CamundaService,
-      useFactory: (configService: ConfigService, httpService: HttpService) => {
-        const wrappedConfig = new Proxy(configService, {
-          get(target, prop: keyof ConfigService) {
-            if (prop === 'get') {
-              return (key: string, defaultValue?: any) => {
-                if (key === 'camunda.base.url') {
-                  return 'http://localhost:8181/engine-rest';
-                }
-                return Reflect.get(target, prop).call(
-                  target,
-                  key,
-                  defaultValue,
-                );
-              };
-            }
-            return Reflect.get(target, prop);
-          },
-        });
-
-        return new CamundaService(wrappedConfig, httpService);
-      },
-      inject: [ConfigService, HttpService],
-    },
-  ],
+  exports: [LeaveService, BpmsModule],
 })
 export class LeaveModule {}

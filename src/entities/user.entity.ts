@@ -1,11 +1,5 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  UpdateDateColumn,
-} from 'typeorm';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { Column, CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
 @Entity('user', { schema: 'public' })

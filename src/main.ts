@@ -13,7 +13,6 @@ async function bootstrap() {
     cors: true,
   });
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
-  app.setGlobalPrefix('api');
 
   const configService = app.get(ConfigService);
   setupSwagger(app, configService);
@@ -40,7 +39,8 @@ async function bootstrap() {
   console.info(`| Server URL: http://localhost:${port}/api          |`);
   console.info(`| Swagger URL: http://localhost:${port}/api/doc     |`);
   console.info('----------------------------------------------------');
-  console.info(configService.get('gateway.url'));
+  console.info(configService.get('hafez.url'));
+  console.info(configService.get('bpms.url'));
 }
 
 bootstrap();

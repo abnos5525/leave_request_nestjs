@@ -1,4 +1,4 @@
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import {
   Controller,
   Get,
@@ -8,34 +8,63 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from 'nest-keycloak-connect';
-import { CamundaService } from '../services/camunda.service';
+import { LeaveService } from '../services/leave.service';
 import { ApprovedLeaveDto } from '../dto/approved-leave.dto';
+import { AuthGuard } from 'nest-keycloak-connect';
+import { ApiResponseList } from 'src/common/decorators/api-response-list.decorator';
+import { ProcessDto } from 'src/dto/process.dto';
+import { LeaveVariablesDto } from 'src/dto/leave-variables.dto';
 
 @ApiTags('Leave Management')
-@Controller('/api/leave')
+@Controller('bpms-core/api/v1')
 @ApiBearerAuth('keycloak-auth')
+@ApiBearerAuth('bearer-auth')
 @UseGuards(AuthGuard)
 export class LeaveController {
-  constructor(private camundaService: CamundaService) {}
+  constructor(private leaveService: LeaveService) {}
 
-  @Post('/start')
-  async startLeaveRequest(@Body() variables: Record<string, any>) {
-    const instance = await this.camundaService.startProcess(
+  @Get('/processes')
+  @ApiResponseList(ProcessDto)
+  async getProcesses() {
+    const data = await this.leaveService.getProcesses();
+    return { data, count: data.length };
+  }
+
+  @Get('/processes/:id/instances')
+  @ApiResponseList(ProcessDto)
+  async getProcessInstance(@Query('id') id: string) {
+    const data = await this.leaveService.getProcessInstance(id);
+    return { data, count: data.length };
+  }
+
+  /////////////////////////////////////
+
+  @Post('/processes/key/:key/start')
+  @ApiBody({ type: LeaveVariablesDto })
+  async startLeaveRequest(@Body() variables: LeaveVariablesDto) {
+    const instance = await this.leaveService.startProcess(
       'leave-request',
       variables,
     );
+
+    // const tasks = await this.leaveService.getTasksByProcessInstanceId(
+    //   instance.id,
+    // );
+
+    // const targetTask = tasks.find(
+    //   (task) => task.taskDefinitionKey === 'Activity_1u09wap',
+    // );
+
+    // if (targetTask) {
+    //   await this.leaveService.completeTask(targetTask.id);
+    // }
+
     return { processInstanceId: instance.id };
   }
 
-  @Get('/tasks')
-  async getTasks(@Query('assignee') assignee?: string) {
-    return this.camundaService.getTasks(assignee);
-  }
-
-  @Get('/tasks/all')
-  async getAllTasks() {
-    return this.camundaService.getTasks();
+  @Get('/tasks/:id')
+  async getTasks(@Query('id') id: string) {
+    return this.leaveService.getTasks(id);
   }
 
   @Post('/tasks/:id/complete')
@@ -43,7 +72,7 @@ export class LeaveController {
     @Param('id') taskId: string,
     @Body() variables?: Record<string, any>,
   ) {
-    await this.camundaService.completeTask(taskId, variables);
+    await this.leaveService.completeTask(taskId, variables);
     return { message: `Task ${taskId} completed` };
   }
 
@@ -52,22 +81,20 @@ export class LeaveController {
     @Param('id') taskId: string,
     @Query('approved') approved: boolean,
   ) {
-    await this.camundaService.completeTask(taskId, { approved });
+    await this.leaveService.completeTask(taskId, { approved });
     return { message: approved ? 'Leave approved' : 'Leave rejected' };
   }
 
   @Get('/tasks/approved')
   async getApprovedLeaves(): Promise<ApprovedLeaveDto[]> {
-    const processes = await this.camundaService.getHistoricProcesses(
+    const processes = await this.leaveService.getHistoricProcesses(
       'approved',
       true,
     );
 
     return Promise.all(
       processes.map(async (proc) => {
-        const variables = await this.camundaService.getHistoricVariables(
-          proc.id,
-        );
+        const variables = await this.leaveService.getHistoricVariables(proc.id);
         return new ApprovedLeaveDto({
           processInstanceId: proc.id,
           employee: variables.employee || '',
@@ -84,6 +111,6 @@ export class LeaveController {
 
   @Get('/tasks/rejected')
   async getRejectedLeaves() {
-    return this.camundaService.getHistoricProcesses('approved', false);
+    return this.leaveService.getHistoricProcesses('approved', false);
   }
 }
