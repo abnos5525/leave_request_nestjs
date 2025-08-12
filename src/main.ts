@@ -13,6 +13,7 @@ async function bootstrap() {
     cors: true,
   });
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+  // app.setGlobalPrefix('api');
 
   const configService = app.get(ConfigService);
   setupSwagger(app, configService);

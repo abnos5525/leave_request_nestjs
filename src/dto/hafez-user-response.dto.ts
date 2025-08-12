@@ -8,12 +8,6 @@ export class HafezUserResponseDto {
   position_name: string;
 
   @ApiProperty()
-  group_id: string;
-
-  @ApiProperty()
-  group_name: string;
-
-  @ApiProperty()
   user_id: string;
 
   @ApiProperty()
@@ -27,7 +21,4 @@ export class HafezUserResponseDto {
 
   @ApiProperty()
   national_code: string;
-
-  @ApiProperty()
-  avatar: string;
 }

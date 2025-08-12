@@ -12,9 +12,12 @@ import { LoginDto } from '../dto/login.dto';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { LoggerService } from '../common/services/logger.service';
 import { LogTypes } from '../common/types/logger';
+import { firstValueFrom } from 'rxjs';
+import { HTTPS_AGENT_OPTIONS } from 'src/common/utils/agent';
 
 @Injectable()
 export class AuthService {
+  private readonly baseUrl: string;
   private accessToken: string | null = null;
   private tokenExpiresAt: number | null = null;
 
@@ -23,6 +26,7 @@ export class AuthService {
     protected configService: ConfigService,
     protected loggerService: LoggerService,
   ) {
+    this.baseUrl = this.configService.get<string>('hafez.url');
     this.httpService.axiosRef.interceptors.request.use(
       this.requestLogger.bind(this),
     );
@@ -33,22 +37,21 @@ export class AuthService {
   }
 
   async getToken(dto: Partial<LoginDto & RefreshTokenDto>) {
-    const params = new url.URLSearchParams({
-      ...dto,
-      client_id: this.configService.get('auth.client.id'),
-      client_secret: this.configService.get('auth.client.secret'),
-    });
     try {
-      const tokenResult = await this.httpService.axiosRef.post(
-        '/token',
-        params.toString(),
-        {
+      const url = `${this.baseUrl}/auth/login`;
+      const params = new URLSearchParams();
+      params.append('username', dto.username);
+      params.append('password', dto.password);
+      const response = await firstValueFrom(
+        this.httpService.post(url, params.toString(), {
+          ...HTTPS_AGENT_OPTIONS,
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
+            accept: '*/*',
           },
-        },
+        }),
       );
-      return tokenResult.data;
+      return response.data;
     } catch (error) {
       console.log('get token error', error.message);
       throw new UnauthorizedException();
@@ -80,11 +83,16 @@ export class AuthService {
         client_secret: this.configService.get('auth.client.secret'),
       });
 
-      await this.httpService.axiosRef.post('/logout', params.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+      await this.httpService.axiosRef.post(
+        `${this.baseUrl}/logout`,
+        params.toString(),
+        {
+          ...HTTPS_AGENT_OPTIONS,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
         },
-      });
+      );
       return { message: 'logout successful' };
     } catch (err) {
       if (err.response?.status === 400)

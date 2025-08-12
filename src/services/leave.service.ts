@@ -3,7 +3,7 @@ import { BpmsService } from './bpms.service';
 import { TypeOrmCrudService } from '@dataui/crud-typeorm';
 import { LeaveEntity } from 'src/entities/leave.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LeaveVariablesDto } from 'src/dto/leave-variables.dto';
+import { StartRequestDto } from 'src/dto/start-request.dto';
 
 @Injectable()
 export class LeaveService extends TypeOrmCrudService<LeaveEntity> {
@@ -18,36 +18,41 @@ export class LeaveService extends TypeOrmCrudService<LeaveEntity> {
     return await this.bpmsService.getProcesses();
   }
 
-  async getProcessInstance(id: string) {
-    return await this.bpmsService.getProcessInstance(id);
+  async getProcessInstancesByKey() {
+    return await this.bpmsService.getProcessInstancesByKey();
   }
 
-  async startProcess(processKey: string, variabled: LeaveVariablesDto) {
-    return await this.bpmsService.startProcess(processKey, variabled);
+  async startProcess(request: StartRequestDto) {
+    return await this.bpmsService.startProcess(request);
   }
 
-  async getTasks(id: string) {
-    return await this.bpmsService.getTasks(id);
+  async getTask(id: string) {
+    return await this.bpmsService.getTask(id);
   }
 
-  async getTasksByProcessInstanceId(processInstanceId: string) {
-    return await this.bpmsService.getTasksByProcessInstanceId(
-      processInstanceId,
-    );
+  async getProcessInstanceById(id: string) {
+    return await this.bpmsService.getProcessInstanceById(id);
+  }
+
+  async deleteProcessInstanceById(id: string) {
+    return await this.bpmsService.deleteProcessInstanceById(id);
+  }
+
+  async getCompletedLeaveTasks(): Promise<any[]> {
+    return await this.bpmsService.getCompletedLeaveTasks();
+  }
+
+  async getActiveLeaveTasksDirect(): Promise<any[]> {
+    return await this.bpmsService.getActiveLeaveTasks();
   }
 
   async completeTask(taskId: string, variables?: Record<string, any>) {
     return await this.bpmsService.completeTask(taskId, variables);
   }
 
-  async getHistoricProcesses(variableName: string, variableValue: any) {
-    return await this.bpmsService.getHistoricProcesses(
-      variableName,
-      variableValue,
-    );
-  }
-
   async getHistoricVariables(processInstanceId: string) {
-    return await this.bpmsService.getHistoricVariables(processInstanceId);
+    return await this.bpmsService.getProcessInstanceVariables(
+      processInstanceId,
+    );
   }
 }

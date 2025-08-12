@@ -14,7 +14,7 @@ export function setupSwagger(
     .addServer(
       configService.get('config.server.profiles') === 'prod'
         ? `${configService.get('gateway.url')}`
-        : '',
+        : 'http://localhost:' + configService.get('app.port'),
     )
     .setVersion(version)
     .addOAuth2(
@@ -26,23 +26,21 @@ export function setupSwagger(
               configService.get('config.server.profiles') === 'prod'
                 ? configService.get('gateway.url') +
                   configService.get('app.name')
-                : ''
+                : configService.get('gateway.url') +
+                  configService.get('app.name')
             }/api/v1/auth/login`,
             refreshUrl: `${
               configService.get('config.server.profiles') === 'prod'
                 ? configService.get('gateway.url') +
                   configService.get('app.name')
-                : ''
+                : configService.get('gateway.url') +
+                  configService.get('app.name')
             }/api/v1/auth/refresh-token`,
             scopes: {},
           },
         },
       },
       'keycloak-auth',
-    )
-    .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-      'bearer-auth',
     )
     .addBasicAuth({ type: 'http' }, 'basic-auth')
     .build();
@@ -53,6 +51,10 @@ export function setupSwagger(
       docExpansion: 'list',
       filter: true,
       showRequestDuration: true,
+      initOAuth: {
+        clientId: 'khabir-service',
+        clientSecret: 'lmccfm83SL5UqDskcPueddtiMP04MNRm',
+      },
     },
   });
 }

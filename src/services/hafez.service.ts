@@ -4,38 +4,47 @@ import { ConfigService } from '@nestjs/config';
 import { CoreService } from '../common/services/core.service';
 import { LoggerService } from '../common/services/logger.service';
 import { LogTypes } from '../common/types/logger';
-import { UserDto } from 'src/dto/user.dto';
-import { HafezUserResponseDto } from 'src/dto/hafez-user-response.dto';
+import { PaginationDto } from 'src/dto/pagination.dto';
+import { HTTPS_AGENT_OPTIONS } from 'src/common/utils/agent';
 
 @Injectable()
 export class HafezService extends CoreService {
+  private readonly baseUrl: string;
   constructor(
     protected httpService: HttpService,
     protected configService: ConfigService,
     protected loggerService: LoggerService,
   ) {
     super(httpService, loggerService, LogTypes.HAFEZ_REQUESTS);
+    this.baseUrl = this.configService.get<string>('hafez.url');
   }
 
-  async getUsers(): Promise<UserDto[]> {
-    // const { data } = await this.httpService.axiosRef.get(
-    //   `/v1/positions/all-with-user-and-group`,
-    // );
-    return;
-    // this.mapHafezUserToPositionUser(data);
-  }
+  async getUsers(request: PaginationDto) {
+    const queryParams = new URLSearchParams();
+    if (request.page !== undefined) {
+      queryParams.append('page', request.page.toString());
+    } else {
+      queryParams.append('page', '0');
+    }
+    if (request.size !== undefined) {
+      queryParams.append('size', request.size.toString());
+    } else {
+      queryParams.append('size', '10');
+    }
 
-  mapHafezUserToPositionUser(data: HafezUserResponseDto[]): UserDto[] {
-    return data.map((item): UserDto => {
-      return {
-        first_name: item.first_name || null,
-        last_name: item.last_name || null,
-        national_code: item.national_code || null,
-        position_id: item.position_id || null,
-        position_name: item.position_name || null,
-        user_id: item.user_id || null,
-        username: item.username || null,
-      };
-    });
+    const url = `${this.baseUrl}/v1/users/?${queryParams.toString()}`;
+
+    try {
+      const response = await this.httpService.axiosRef.get(url, {
+        ...HTTPS_AGENT_OPTIONS,
+      });
+      return response.data || { data: [] };
+    } catch (error) {
+      this.loggerService['error']?.error?.(
+        `HafezService: Failed to fetch users from ${url}: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
   }
 }

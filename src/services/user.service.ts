@@ -3,6 +3,7 @@ import { TypeOrmCrudService } from '@dataui/crud-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { HafezService } from './hafez.service';
+import { PaginationDto } from 'src/dto/pagination.dto';
 
 @Injectable()
 export class UserService extends TypeOrmCrudService<UserEntity> {
@@ -13,7 +14,7 @@ export class UserService extends TypeOrmCrudService<UserEntity> {
     super(repo);
   }
 
-  async getUsers() {
-    return this.hafezService.getUsers();
+  async getUsers(request: PaginationDto) {
+    return this.hafezService.getUsers(request);
   }
 }

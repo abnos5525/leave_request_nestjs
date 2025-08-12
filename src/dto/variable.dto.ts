@@ -1,13 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { VariableTypeEnum } from '../enumerate/variable-type.enum';
+import { VariableTypeEnum } from 'src/enumerate/variable-type.enum';
 
 export class VariableDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'The name of the variable' })
   name: string;
 
   @ApiProperty()
   value: any;
 
-  @ApiProperty({ enum: VariableTypeEnum })
+  @ApiProperty({
+    description: 'The type of the variable',
+    enum: VariableTypeEnum,
+    example: VariableTypeEnum.String,
+  })
   type: VariableTypeEnum;
+
+  constructor(partial: Partial<VariableDto>) {
+    Object.assign(this, partial);
+  }
 }

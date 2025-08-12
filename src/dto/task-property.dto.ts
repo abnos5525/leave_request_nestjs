@@ -1,9 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class TaskPropertyDto {
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'The name of the task property (e.g., extension property name)',
+  })
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'The value of the task property' })
   value: string;
+
+  constructor(partial: Partial<TaskPropertyDto>) {
+    Object.assign(this, partial);
+  }
 }

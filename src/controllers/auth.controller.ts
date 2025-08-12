@@ -5,7 +5,6 @@ import { AuthService } from '../services/auth.service';
 import { LoginDto } from '../dto/login.dto';
 import { LoginResponseDto } from '../dto/login-response.dto';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
-import { AuthUserDto } from '../dto/auth-user.dto';
 
 @ApiTags('auth')
 @Controller('khabir-service/api/v1/auth')
@@ -27,21 +26,5 @@ export class AuthController {
   @Post('logout')
   async adminLogout(@Body() dto: RefreshTokenDto) {
     return this.authService.logoutFromKeycloak(dto);
-  }
-
-  @Get('me')
-  @ApiBearerAuth('keycloak-auth')
-  @ApiBearerAuth('bearer-auth')
-  @UseGuards(AuthGuard)
-  @ApiOkResponse({ type: AuthUserDto })
-  async getUser(@AuthenticatedUser() user) {
-    return {
-      name: user.name,
-      given_name: user.given_name,
-      family_name: user.family_name,
-      preferred_username: user.preferred_username,
-      email: user.email,
-      scope: user.scope,
-    };
   }
 }
